@@ -85,7 +85,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='9to5AI.app',
-    icon=None,
+    icon='9to5AI.icns',
     bundle_identifier='com.9to5ai.app',
     version='0.42',
     info_plist={

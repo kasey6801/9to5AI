@@ -18,6 +18,23 @@ if [ ! -f "$SPEC_FILE" ]; then
     exit 1
 fi
 
+echo "==> Generating app icon..."
+.venv/bin/pip install Pillow -q
+.venv/bin/python make_icon.py
+mkdir -p 9to5AI.iconset
+sips -z 16 16     9to5AI_icon.png --out 9to5AI.iconset/icon_16x16.png     >/dev/null
+sips -z 32 32     9to5AI_icon.png --out 9to5AI.iconset/icon_16x16@2x.png  >/dev/null
+sips -z 32 32     9to5AI_icon.png --out 9to5AI.iconset/icon_32x32.png     >/dev/null
+sips -z 64 64     9to5AI_icon.png --out 9to5AI.iconset/icon_32x32@2x.png  >/dev/null
+sips -z 128 128   9to5AI_icon.png --out 9to5AI.iconset/icon_128x128.png   >/dev/null
+sips -z 256 256   9to5AI_icon.png --out 9to5AI.iconset/icon_128x128@2x.png >/dev/null
+sips -z 256 256   9to5AI_icon.png --out 9to5AI.iconset/icon_256x256.png   >/dev/null
+sips -z 512 512   9to5AI_icon.png --out 9to5AI.iconset/icon_256x256@2x.png >/dev/null
+sips -z 512 512   9to5AI_icon.png --out 9to5AI.iconset/icon_512x512.png   >/dev/null
+sips -z 1024 1024 9to5AI_icon.png --out 9to5AI.iconset/icon_512x512@2x.png >/dev/null
+iconutil -c icns 9to5AI.iconset
+rm -rf 9to5AI.iconset
+
 echo "==> Stopping any running instance on port 5002..."
 lsof -ti :5002 | xargs kill -9 2>/dev/null || true
 
