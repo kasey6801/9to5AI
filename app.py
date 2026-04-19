@@ -35,7 +35,8 @@ BUILDING (.app + .dmg for macOS distribution):
 ===========================================================================
 """
 
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, render_template_string, Response
+import base64
 import feedparser
 import threading
 import webbrowser
@@ -334,6 +335,101 @@ def _get_articles() -> list:
 
 
 # ---------------------------------------------------------------------------
+# Favicon — 64×64 ICO with dark rounded square + red "9"
+# ---------------------------------------------------------------------------
+
+_FAVICON_ICO = (
+    "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"
+)
+
+# ---------------------------------------------------------------------------
 # Embedded frontend — 9to5Mac-inspired design for AI news
 # ---------------------------------------------------------------------------
 
@@ -343,7 +439,7 @@ HTML = r"""<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>9 to 5 AI</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23131313'/%3E%3Ctext x='16' y='23' font-family='Arial Black,sans-serif' font-size='20' font-weight='900' fill='%23e8363d' text-anchor='middle'%3E9%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1318,6 +1414,11 @@ document.getElementById("q").addEventListener("input", e => {
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+@app.route("/favicon.ico")
+def favicon():
+    return Response(base64.b64decode(_FAVICON_ICO), mimetype="image/x-icon")
+
 
 @app.route("/")
 def index():
