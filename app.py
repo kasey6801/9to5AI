@@ -70,8 +70,8 @@ app = Flask(__name__)
 
 NEWS_SOURCES = [
     # ── Employment Trends (2) ──────────────────────────────────────────────
-    {"name": "Indeed Hiring Lab",           "url": "https://hiringlab.org/feed/",                                                  "default_country": "United States", "filter_ai": True,  "theme": "Employment Trends"},
-    {"name": "Economic Policy Institute",   "url": "https://www.epi.org/blog/feed/",                                               "default_country": "United States", "filter_ai": True,  "theme": "Employment Trends"},
+    {"name": "Indeed Hiring Lab",           "url": "https://hiringlab.org/feed/",                                                  "default_country": "United States", "filter_ai": False, "theme": "Employment Trends"},
+    {"name": "Economic Policy Institute",   "url": "https://www.epi.org/blog/feed/",                                               "default_country": "United States", "filter_ai": False, "theme": "Employment Trends"},
     # ── News (10) ──────────────────────────────────────────────────────────
     {"name": "TechCrunch AI",               "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",                     "default_country": "United States", "filter_ai": False, "theme": "News"},
     {"name": "VentureBeat AI",              "url": "https://venturebeat.com/category/ai/feed/",                                    "default_country": "United States", "filter_ai": False, "theme": "News"},
