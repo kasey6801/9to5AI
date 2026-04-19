@@ -429,6 +429,33 @@ _FAVICON_ICO = (
     "41p1cEqq3OpH/ReliNTXmY7CbwAAAABJRU5ErkJggg=="
 )
 
+_FAVICON_PNG = (
+    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFCElEQVR4nO2bTWwbRRTH/zveXa+/"
+    "k7hp66RJCWn5FIgWJC4gJIjg0AoqEKISJ0AIwQXECaRK5cCpRUIgUA4U6AGpBw4IlUaq+BIqlK/C"
+    "haJWQEFp3DiJs44d22vHX4tmhKvdjT/Wrtfy7vKTHMuzO8/7nmfevPdmwqEF0WhUhQOQZZlrdo1z"
+    "suJmDEHconwz3Ui7G5yGUUfS7IKT0epKjA1uoa4zgcvh3PjrayFwOQQuh8Dl8P34Ehp+7ZH8eCAQ"
+    "wl0+P7Z4eIx4eFRUFalqFRdLRXyv5DCXW8d6rdqPR+qfE7xBlHB4NIY7JF/bewu1Gt5Lr+JYWkZV"
+    "Ve1vgIeCYRzdOg4P1zQXaciPhTxeXFpAtlaDbX3APf4gjnShPOVuXwBvbZ8A30XfgRgBYeLBqclp"
+    "Ns+1xMslHM+k8J2Sw0qlDIEjuF4U8WAgjIOREUgGhWfXkngnlYTtDPDaaAyPh4d1bXO5DA6tLGKj"
+    "ydyeEETMxiYxJYhX28qqiv0Ll5jhbDMFRjw8DoSGdG0/FfJ4ZflKU+UpC+USnl2c160CAsfhqaEo"
+    "rIT0WuCjoSH24HWoOoeTCfbejkSljFnDkH8kGIHEWReukF4LvC8Q1H0+k8/icgdD+JNsWrcE+ghh"
+    "DtUWBhA4Drd69ev9GSXXkQy69P1R2tC13WsXA4zzArwGT36hVOxYzj+GEXO7JMEWBoh4PJva1qqd"
+    "h7ZZQzg8LUoQLYoJSC+F+Ro4q1aevxlGKdSsW3nhGp7M/HddE41C1yAhXQVSRmI8P/gGSFcrDQOc"
+    "TmnUJ0JsYIBEpbxp/u4xkQVq8ROCG0XvpnZjmDyQBqgB+LVY0LXtC0bYHO4kkGqUQEnEBgagnM5l"
+    "oCXGC3gyMgIzjPECnhve0vBa1aKknfRaIK3qJA2+4OXoNlYNalc4OTa2c1MGWaeoWlMb4HstkGZw"
+    "R1eXcWTbuC5CfHv7BL7Ir+PTbAbnNwosPqAx/k1eCfuDERwIRa7m/+p/crRrf9GiChFvhdBTuQyL"
+    "3x8ORXTtM4Ewe7XjRCbFMkqtAdJdBFRmIJZIBXAouYiTWb0/MMO3So7VBelqoGWpUoatDFBVVby6"
+    "cgWvryZMhcO0Qvx+WsYLSwvYwevjANp7pUGMMfBlcZUN5zV8ls2woU9T5d2ihKiHZ8M7WakgXinh"
+    "63wWpzXOc5chDqDptFVVYh59gIbINM+nLzPc4tVnf79v6GMLx+8M7ZX8us/nDcGVow0w6uExbZgC"
+    "Zwt59xhgJhjaNP8vGSpEA+0D5iZ3Yacmm3tDXsaHadl0/8dC+nL65/ksrIT0WqBsWK6MNcJW3B8I"
+    "4WaNA6R+/+P1NdjKAL8ZHNZMIMQSIjP1RLqJquWbfJbtF9jKAF8p+iFbzwOaJTmU3aIXH4xdx7bN"
+    "tcHPm6kVWA3fa4HnCgp+KSq4U7OU0XX95MQ0Psqk8GV+HfFKmVl+SvBiXyiCg+Fh3WYK5Xhaxl8W"
+    "Oj9L9wanRS9OjE8h0EU9sG7EpxPzfTkjQKwQSpetl5bjyHexv/9zQcHzS5f7dkCCWCX4rJLDE/G/"
+    "mUJmoOXzd1NJPJOYh9KHgxF9PSd4m9fHKkJ7fX7s4AW2gULAIVOr4s/SBn5QcixPoOeF+g33/0FJ"
+    "l0PgcghcDoHLIXA5BC6HwOUQuBzS6p8KnY4syxYewLMJhP5x4yio60yMDW5AqytpdsGpGHUk7W5w"
+    "Eo1041p1cEqq3OpH/ReliNTXmY7CbwAAAABJRU5ErkJggg=="
+)
+
 # ---------------------------------------------------------------------------
 # Embedded frontend — 9to5Mac-inspired design for AI news
 # ---------------------------------------------------------------------------
@@ -439,7 +466,8 @@ HTML = r"""<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>9 to 5 AI</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1416,8 +1444,13 @@ document.getElementById("q").addEventListener("input", e => {
 # ---------------------------------------------------------------------------
 
 @app.route("/favicon.ico")
-def favicon():
+def favicon_ico():
     return Response(base64.b64decode(_FAVICON_ICO), mimetype="image/x-icon")
+
+
+@app.route("/favicon.png")
+def favicon_png():
+    return Response(base64.b64decode(_FAVICON_PNG), mimetype="image/png")
 
 
 @app.route("/")
