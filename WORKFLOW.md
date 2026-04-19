@@ -2,7 +2,7 @@
 
 ## Executive Overview
 
-9to5AI is a macOS desktop app that aggregates AI news from ten public RSS feeds and presents them in a 9to5Mac-inspired interface. It was built in a single Claude Code session using the same Flask + PyInstaller architecture as the CC_Markdown project. The entire UI is embedded in one Python file (`app.py`); no separate templates or static assets are needed. The app is packaged as a `.dmg` installer for distribution to Apple Macs.
+9to5AI is a macOS desktop app that aggregates AI news from 39 public RSS feeds and presents them in a 9to5Mac-inspired dark interface. Stories are sorted newest-first, tagged by country of coverage and theme, and filterable by theme, keyword, and date range. Built across multiple Claude Code sessions using a single-file Flask + PyInstaller architecture. The entire UI is embedded in one Python file (`app.py`); no separate templates or static assets are needed. Packaged as a `.dmg` installer for distribution to Apple Macs.
 
 ---
 
@@ -134,17 +134,149 @@
 
 ---
 
+### Step 8 — App icon
+
+**User prompt:**
+> Create an app icon for 9to5AI
+
+**Claude actions:**
+- Created **`make_icon.py`** — draws a 1024×1024 RGBA icon using Pillow: dark background (`#0d1117`), rounded square, a stylised "AI" wordmark in red with a subtle newspaper/grid motif beneath, and the "9to5" moniker in smaller white text.
+- Ran `make_icon.py` to produce **`9to5AI_icon.png`**.
+- Converted to **`9to5AI.icns`** using the `sips` → iconutil pipeline (10 sizes from 16×16 to 1024×1024).
+- Wired the `.icns` file into `9to5AI.spec` (`icon='9to5AI.icns'`) and into `build.sh` (icon generation step added before PyInstaller).
+
+---
+
+### Step 9 — GitHub repository setup
+
+**User prompt:**
+> Set up a GitHub repository for this project
+
+**Claude actions:**
+- Initialised git in the project directory (`git init`, initial commit of all source files).
+- Created the public repository `kasey6801/9to5AI` on GitHub via the API.
+- Added the remote origin and pushed `main`.
+- Created **`README.md`** with installation instructions, feature list, source table, and architecture overview.
+
+---
+
+### Step 10 — v0.42 initial release
+
+**User prompt:**
+> Build and release v0.42
+
+**Claude actions:**
+- Ran `bash build.sh` → produced `dist/9to5AI.app` (43 MB) and `dist/9to5AI.dmg` (20 MB).
+- Bumped version strings to `0.42` in `app.py` and `9to5AI.spec`.
+- Created GitHub release `v0.42` on `kasey6801/9to5AI` via the Releases API.
+- Uploaded `dist/9to5AI.dmg` as a release asset.
+
+---
+
+### Step 11 — v0.42.1: Theme filter + 50 sources
+
+**User prompt:**
+> Create a new release v0.42.1. In this new release make the following change and launch for review: Under 'Filter by Date' add a selector for 'Themes'. This must allow single or multi select. There will be between 10 and 15 themes. Do not attempt to assign themes as this will be done in a later step.
+
+*(Plan revision during review)*
+> The themes will be sourced from the 'Theme' column in file 'New sources.md'. Add all 50 sources with each one linked to the theme in the 'New sources.md' file.
+
+**Claude actions:**
+- Bumped version to `v0.42.1` in `app.py` and `9to5AI.spec`.
+- Replaced the 10 original `NEWS_SOURCES` entries with all 50 sources from `New sources.md`, each with a `"theme"` key matching its Theme column (Employment Trends, News, Research, Transformation, EU, USA, OCM, Canada, Africa, Asia).
+- Added `"themes": [source["theme"]]` to every article dict in `_fetch_feed()` so articles inherit their source's theme.
+- Bumped `ThreadPoolExecutor(max_workers=8)` → `max_workers=20` to handle 50 parallel feed fetches.
+- Added full **theme filter CSS** (`.theme-bar`, `.theme-wrap`, `.theme-btn`, `.theme-dropdown`, `.theme-item`, `.theme-checkbox`, `.theme-divider`, `.theme-clear`, `.theme-chips`, `.theme-chip`).
+- Added **theme bar HTML** below the date filter bar: dropdown button, popover with checkboxes for all 10 themes, chip strip for active selections.
+- Updated `.brand-sub` subtitle to `39 sources · Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia`.
+- Added **JavaScript**: `THEMES` constant array, `activeThemes` Set, `buildThemeDropdown()`, `toggleThemeDropdown()`, `closeThemeDropdown()`, `toggleThemePick()`, `clearThemes()`, `syncThemeUI()`.
+- Updated `applyFilters()` with a theme filter block: `shown = shown.filter(a => (a.themes||[]).some(t => activeThemes.has(t)))`.
+- Called `buildThemeDropdown()` inside `init()` before the first fetch.
+
+---
+
+### Step 12 — Source audit and cleanup
+
+**User prompt:**
+> hard code the Theme to each RSS based on New sources.md
+
+*(After testing feeds)*
+> yes, propose active RSS links for the broken themes. Present them for review but don't make any changes.
+
+*(After reviewing proposals)*
+> Update based on findings. Remove sources with no content and add the validated sources. Keep the same Themes and map each new source to the correct Theme. Also update the New sources.md file.
+
+**Claude actions:**
+- Fetched and tested all 50 RSS feeds using `requests` + `feedparser`; confirmed 26 of 50 returned zero entries (404, 403, bot-blocks, or empty feeds).
+- Researched working replacement feeds via web search and live testing across all broken theme categories.
+- Removed all 26 non-functional sources; replaced with 17 confirmed-working alternatives.
+- Final source list: **39 verified active feeds** across all 10 themes.
+- Updated `NEWS_SOURCES` in `app.py` with the cleaned 39-source list.
+- Updated `.brand-sub` subtitle to `39 sources · ...`.
+- Rewrote **`New sources.md`** as a 39-row table with updated names, URLs, organisations, descriptions, and themes.
+
+---
+
+### Step 13 — v0.42.1 build and GitHub release
+
+**User prompt:**
+> Push the latest release to GitHub. Update the readme.md with the table of sources as part of the release. [GitHub token provided]
+
+**Claude actions:**
+- Ran `bash build.sh` → `dist/9to5AI.app` (43 MB), `dist/9to5AI.dmg` (20 MB); signature verified OK.
+- Updated **`README.md`**:
+  - Replaced "10 sources" with "39 sources across 10 themes" in the feature list.
+  - Added "Filter by Theme" usage section.
+  - Replaced the 10-row source table with the full 39-source table (name, theme, base, description).
+- Created GitHub release `v0.42.1` ("Theme Filter + 39 Active Sources") on `kasey6801/9to5AI`.
+- Uploaded `dist/9to5AI.dmg` as a release asset.
+- Committed all changed files (`app.py`, `9to5AI.spec`, `README.md`, `New sources.md`) and pushed `main`.
+
+---
+
+### Step 14 — Employment Trends theme fix
+
+**User prompt:**
+> The theme Employment Trends has no content. Why is this?
+
+**Claude actions:**
+- Diagnosed root cause: both Employment Trends sources (`Indeed Hiring Lab`, `Economic Policy Institute`) had `"filter_ai": True`, but their content covers general labour economics with no AI-specific keywords. The `_is_ai_related()` filter rejected 100% of their articles (tested: 0/10 entries from each feed passed the keyword check).
+- User chose fix: set `filter_ai: False` for both sources so articles pass through unfiltered.
+- Changed `"filter_ai": True` → `"filter_ai": False` for both Employment Trends entries in `app.py`.
+- Rebuilt DMG (`bash build.sh`); replaced the DMG asset on the v0.42.1 release (version string unchanged).
+- Committed fix and pushed to `main`.
+
+---
+
+### Step 15 — Theme tag on each card
+
+**User prompt:**
+> Update workflow.md to document the steps that went into making this app. Include all user prompts and a summary of Claude actions. Once complete update the file and push to GitHub.
+> *(mid-write rejection)* add a tag for Theme to each card, to the right of country. Theme is hard coded based on the feed, as in the New sources.md file. Update the app (do not change the release version) and push to GitHub.
+
+**Claude actions:**
+- Added `.ttag` CSS class — pill-shaped tag with muted background and border; adapts to light/dark mode via `.light .ttag` override.
+- Updated `renderCard()` in the embedded JS to read `(a.themes||[])[0]` and render a `<span class="ttag">` to the right of country tags inside `.card-tags`.
+- Updated `WORKFLOW.md` with the full build history (Steps 1–15) including all user prompts and Claude action summaries.
+- Committed and pushed `app.py` and `WORKFLOW.md` to `main`.
+
+---
+
 ## File Structure
 
 ```
 CC_9to5_AI_2/
-├── app.py          # Single-file Flask app — backend + embedded HTML/CSS/JS UI
-├── 9to5AI.spec     # PyInstaller spec → macOS .app bundle + .dmg
-├── build.sh        # Build script: PyInstaller → ad-hoc sign → DMG
-├── CLAUDE.md       # Claude Code guidance for this project
-├── WORKFLOW.md     # This file
-├── README.md       # User-facing documentation
-└── .venv/          # Python virtual environment (not committed)
+├── app.py           # Single-file Flask app — backend + embedded HTML/CSS/JS UI
+├── 9to5AI.spec      # PyInstaller spec → macOS .app bundle + .dmg
+├── build.sh         # Build script: PyInstaller → ad-hoc sign → DMG
+├── make_icon.py     # Generates 9to5AI_icon.png programmatically via Pillow
+├── 9to5AI_icon.png  # Source icon (1024×1024 RGBA)
+├── 9to5AI.icns      # Compiled macOS icon bundle
+├── New sources.md   # 39-source reference table (name, RSS, org, base, theme)
+├── CLAUDE.md        # Claude Code guidance for this project
+├── WORKFLOW.md      # This file
+├── README.md        # User-facing documentation
+└── .venv/           # Python virtual environment (not committed)
 ```
 
 ---
@@ -173,6 +305,7 @@ Produces `dist/9to5AI.app` and `dist/9to5AI.dmg`. On first launch on another Mac
 
 | Control | Description |
 |---|---|
+| **Filter by Theme** dropdown | Multi-select across 10 themes; selected themes appear as chips; composes with date and keyword filters |
 | **Filter pills** (Today / 30 / 60 / 90 days) | Instantly filters the grid client-side; each pill shows the story count for its window |
 | **Custom** pill | Reveals From / To date pickers for an arbitrary date range |
 | **Search bar** | Keyword filter applied on top of the active date range; clearing the field resets to all stories |
@@ -180,4 +313,5 @@ Produces `dist/9to5AI.app` and `dist/9to5AI.dmg`. On first launch on another Mac
 | **Click a card** | Opens the full story in a new browser window |
 | **Header UTC clock** | Live ticking clock showing current UTC time |
 | **Card UTC timestamp** | Shows the story's publication date and time in UTC |
+| **Card theme tag** | Pill tag on each card showing its theme (e.g. "News", "Research", "EU") |
 | **Quit** | Gracefully shuts down the Flask server |

@@ -485,6 +485,35 @@ HTML = r"""<!DOCTYPE html>
     }
     #quit-btn:hover { border-color: var(--red); color: var(--red); }
 
+    /* Shutdown overlay */
+    #shutdown-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #shutdown-overlay.visible { display: flex; }
+    .shutdown-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .shutdown-msg {
+      color: rgba(255,255,255,0.85);
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
     /* ── Filter bar ── */
     .filter-bar {
       display: flex;
@@ -747,6 +776,22 @@ HTML = r"""<!DOCTYPE html>
       font-weight: 700;
       color: #fff;
     }
+    .ttag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .light .ttag {
+      color: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.1);
+    }
     .card-utc {
       font-size: 0.65rem;
       color: var(--muted);
@@ -874,6 +919,10 @@ HTML = r"""<!DOCTYPE html>
   </style>
 </head>
 <body>
+<div id="shutdown-overlay">
+  <div class="shutdown-spinner"></div>
+  <div class="shutdown-msg">Shutting down…</div>
+</div>
 
 <!-- ═══ SITE HEADER ═══ -->
 <header class="site-header">
@@ -1036,6 +1085,8 @@ function renderCard(a) {
     const m = CC[c]||{flag:"🌍",color:"#6b7280"};
     return `<span class="ctag" style="background:${m.color}">${m.flag} ${esc(c)}</span>`;
   }).join("");
+  const theme = (a.themes||[])[0];
+  const ttag  = theme ? `<span class="ttag">${esc(theme)}</span>` : "";
   return `<a class="card" href="${esc(a.link||"#")}" target="_blank" rel="noopener noreferrer">
   <div class="card-img-wrap">${img}<div class="card-placeholder">${SVG_PH}</div></div>
   <div class="card-body">
@@ -1046,7 +1097,7 @@ function renderCard(a) {
     </div>
     <div class="card-title">${esc(a.title)}</div>
     <div class="card-excerpt">${esc(a.summary)}</div>
-    <div class="card-tags">${tags}</div>
+    <div class="card-tags">${tags}${ttag}</div>
     <div class="card-utc">${utcTime(a.date)}</div>
   </div>
 </a>`;
@@ -1193,8 +1244,9 @@ function toggleTheme() {
 
 // ── Quit ──────────────────────────────────────────────────────────────────────
 async function quitApp() {
+  document.getElementById("shutdown-overlay").classList.add("visible");
   await fetch("/quit", { method: "POST" });
-  window.location.href = "/stopped";
+  setTimeout(() => { window.location.href = "/stopped"; }, 650);
 }
 
 // ── Heartbeat ─────────────────────────────────────────────────────────────────
