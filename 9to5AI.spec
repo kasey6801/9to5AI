@@ -87,14 +87,14 @@ app = BUNDLE(
     name='9to5AI.app',
     icon='9to5AI.icns',
     bundle_identifier='com.9to5ai.app',
-    version='0.42',
+    version='0.42.1',
     info_plist={
         'NSPrincipalClass': 'NSApplication',
         'NSHighResolutionCapable': True,
         'LSBackgroundOnly': False,
         'NSHumanReadableCopyright': '9to5AI — AI News Aggregator',
-        'CFBundleShortVersionString': '0.42',
-        'CFBundleVersion': '42',
+        'CFBundleShortVersionString': '0.42.1',
+        'CFBundleVersion': '421',
         'LSMinimumSystemVersion': '12.0',
         'NSAppTransportSecurity': {
             'NSAllowsArbitraryLoads': True,

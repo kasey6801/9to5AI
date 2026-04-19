@@ -1,7 +1,7 @@
 """
 9to5AI — AI News Aggregator
 ============================
-Version: v0.42
+Version: v0.42.1
 
 A self-contained Flask web application that aggregates AI news from multiple
 public RSS feeds and presents them in a 9to5Mac-inspired interface.
@@ -69,16 +69,55 @@ app = Flask(__name__)
 # ---------------------------------------------------------------------------
 
 NEWS_SOURCES = [
-    {"name": "TechCrunch AI",       "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",      "default_country": "United States", "filter_ai": False},
-    {"name": "VentureBeat AI",      "url": "https://venturebeat.com/category/ai/feed/",                     "default_country": "United States", "filter_ai": False},
-    {"name": "The Verge AI",        "url": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml", "default_country": "United States", "filter_ai": False},
-    {"name": "MIT Tech Review",     "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed", "default_country": "United States", "filter_ai": False},
-    {"name": "Wired AI",            "url": "https://www.wired.com/feed/tag/ai/latest/rss",                  "default_country": "United States", "filter_ai": False},
-    {"name": "Ars Technica",        "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",      "default_country": "United States", "filter_ai": True},
-    {"name": "BBC Technology",      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",              "default_country": "United Kingdom", "filter_ai": True},
-    {"name": "ZDNet AI",            "url": "https://www.zdnet.com/topic/artificial-intelligence/rss.xml",   "default_country": "United States", "filter_ai": True},
-    {"name": "Engadget",            "url": "https://www.engadget.com/rss.xml",                              "default_country": "United States", "filter_ai": True},
-    {"name": "IEEE Spectrum AI",    "url": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss", "default_country": "United States", "filter_ai": False},
+    # ── Employment Trends (2) ──────────────────────────────────────────────
+    {"name": "Indeed Hiring Lab",           "url": "https://hiringlab.org/feed/",                                                  "default_country": "United States", "filter_ai": True,  "theme": "Employment Trends"},
+    {"name": "Economic Policy Institute",   "url": "https://www.epi.org/blog/feed/",                                               "default_country": "United States", "filter_ai": True,  "theme": "Employment Trends"},
+    # ── News (10) ──────────────────────────────────────────────────────────
+    {"name": "TechCrunch AI",               "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",                     "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "VentureBeat AI",              "url": "https://venturebeat.com/category/ai/feed/",                                    "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "The Verge AI",                "url": "https://www.verge.com/ai-artificial-intelligence.rss",                         "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "MIT Tech Review",             "url": "https://www.technologyreview.com/feed/",                                       "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "Wired AI",                    "url": "https://www.wired.com/feed/tag/ai/latest/",                                    "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "Ars Technica AI",             "url": "https://arstechnica.com/ai/feed/",                                             "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "BBC Technology",              "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",                             "default_country": "United Kingdom","filter_ai": True,  "theme": "News"},
+    {"name": "ZDNet AI",                    "url": "https://www.zdnet.com/topic/artificial-intelligence/rss.xml",                  "default_country": "United States", "filter_ai": True,  "theme": "News"},
+    {"name": "Engadget",                    "url": "https://www.engadget.com/rss.xml",                                             "default_country": "United States", "filter_ai": True,  "theme": "News"},
+    {"name": "IEEE Spectrum AI",            "url": "https://spectrum.ieee.org/topic/artificial-intelligence/rss",                  "default_country": "United States", "filter_ai": False, "theme": "News"},
+    # ── Research (4) ───────────────────────────────────────────────────────
+    {"name": "OpenAI News",                 "url": "https://openai.com/news/rss.xml",                                              "default_country": "United States", "filter_ai": False, "theme": "Research"},
+    {"name": "Google AI Blog",              "url": "https://ai.googleblog.com/atom.xml",                                           "default_country": "United States", "filter_ai": False, "theme": "Research"},
+    {"name": "Hugging Face Blog",           "url": "https://huggingface.co/blog/feed.xml",                                         "default_country": "France",        "filter_ai": False, "theme": "Research"},
+    {"name": "DeepMind Blog",               "url": "https://deepmind.google/discover/blog/rss/",                                   "default_country": "United Kingdom","filter_ai": False, "theme": "Research"},
+    # ── Transformation (3) ─────────────────────────────────────────────────
+    {"name": "McKinsey Insights",           "url": "https://www.mckinsey.com/insights/rss",                                        "default_country": "United States", "filter_ai": True,  "theme": "Transformation"},
+    {"name": "Deloitte Insights Podcast",   "url": "https://deloitteuniversitypress.libsyn.com/rss",                               "default_country": "United States", "filter_ai": True,  "theme": "Transformation"},
+    {"name": "Change Management Review",    "url": "https://changemanagementreview.com/feed/",                                     "default_country": "United States", "filter_ai": True,  "theme": "Transformation"},
+    # ── EU (5) ─────────────────────────────────────────────────────────────
+    {"name": "EU AI Act",                   "url": "https://artificialintelligenceact.eu/feed/",                                   "default_country": "Belgium",       "filter_ai": False, "theme": "EU"},
+    {"name": "EC Digital Strategy",         "url": "https://digital-strategy.ec.europa.eu/en/policies/rss.xml",                    "default_country": "Belgium",       "filter_ai": True,  "theme": "EU"},
+    {"name": "Sifted AI/Europe",            "url": "https://sifted.eu/rss/",                                                       "default_country": "United Kingdom","filter_ai": True,  "theme": "EU"},
+    {"name": "Euractiv EU Tech",            "url": "https://www.euractiv.com/section/digital/rss/",                                "default_country": "Belgium",       "filter_ai": True,  "theme": "EU"},
+    {"name": "EDPS AI",                     "url": "https://edps.europa.eu/rss.xml",                                               "default_country": "Belgium",       "filter_ai": True,  "theme": "EU"},
+    # ── USA (5) ────────────────────────────────────────────────────────────
+    {"name": "NIST Information Technology", "url": "https://www.nist.gov/news-events/information%20technology/rss.xml",            "default_country": "United States", "filter_ai": True,  "theme": "USA"},
+    {"name": "Nextgov",                     "url": "https://www.nextgov.com/rss/all/",                                             "default_country": "United States", "filter_ai": True,  "theme": "USA"},
+    {"name": "Defense One",                 "url": "https://www.defenseone.com/rss/all/",                                          "default_country": "United States", "filter_ai": True,  "theme": "USA"},
+    {"name": "GovCIO Media AI",             "url": "https://governmentciomedia.com/tag/artificial-intelligence/feed/",             "default_country": "United States", "filter_ai": False, "theme": "USA"},
+    {"name": "FedScoop AI",                 "url": "https://fedscoop.com/category/ai/feed/",                                       "default_country": "United States", "filter_ai": False, "theme": "USA"},
+    # ── OCM (2) ────────────────────────────────────────────────────────────
+    {"name": "Kotter Inc.",                 "url": "https://www.kotterinc.com/feed/",                                              "default_country": "United States", "filter_ai": True,  "theme": "OCM"},
+    {"name": "MIT Sloan Management Review", "url": "https://sloanreview.mit.edu/feed/",                                            "default_country": "United States", "filter_ai": True,  "theme": "OCM"},
+    # ── Canada (2) ─────────────────────────────────────────────────────────
+    {"name": "CD Howe Institute",           "url": "https://cdhowe.org/feed/",                                                     "default_country": "Canada",        "filter_ai": True,  "theme": "Canada"},
+    {"name": "Open North",                  "url": "https://opennorth.ca/feed/",                                                   "default_country": "Canada",        "filter_ai": True,  "theme": "Canada"},
+    # ── Africa (3) ─────────────────────────────────────────────────────────
+    {"name": "Smart Africa AI",             "url": "https://smartafrica.org/feed/",                                                "default_country": "Rwanda",        "filter_ai": True,  "theme": "Africa"},
+    {"name": "CIPESA AI Policy",            "url": "https://cipesa.org/feed/",                                                     "default_country": "South Africa",  "filter_ai": True,  "theme": "Africa"},
+    {"name": "Just Security",               "url": "https://www.justsecurity.org/feed/",                                           "default_country": "United States", "filter_ai": True,  "theme": "Africa"},
+    # ── Asia (3) ───────────────────────────────────────────────────────────
+    {"name": "CSET Georgetown",             "url": "https://cset.georgetown.edu/feed/",                                             "default_country": "United States", "filter_ai": False, "theme": "Asia"},
+    {"name": "Japan Digital Agency",        "url": "https://www.digital.go.jp/rss/news.xml",                                       "default_country": "Japan",         "filter_ai": True,  "theme": "Asia"},
+    {"name": "Korea AI Times",              "url": "https://www.aitimes.kr/rss/allArticle.xml",                                    "default_country": "South Korea",   "filter_ai": False, "theme": "Asia"},
 ]
 
 # ---------------------------------------------------------------------------
@@ -257,6 +296,7 @@ def _fetch_feed(source: dict) -> list:
                 "date_ts":  pub_date.timestamp(),
                 "image":    image_url,
                 "countries": countries,
+                "themes":   [source["theme"]] if source.get("theme") else [],
             })
     except Exception as exc:
         print(f"[9to5AI] Feed error ({source['name']}): {exc}")
@@ -278,7 +318,7 @@ def _get_articles() -> list:
     now = time.monotonic()
     with _cache_lock:
         if now - _cache_ts > _CACHE_TTL or not _cache:
-            with ThreadPoolExecutor(max_workers=8) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 results = list(pool.map(_fetch_feed, NEWS_SOURCES))
             flat = [a for r in results for a in r]
             seen: set = set()
@@ -728,6 +768,109 @@ HTML = r"""<!DOCTYPE html>
     .cdr-in::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
     .cdr-sep { color: rgba(255,255,255,0.35); font-size: 0.8rem; }
     .no-results { grid-column: 1/-1; }
+
+    /* ── Theme filter row ── */
+    .theme-bar {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 0 32px 14px;
+      flex-wrap: wrap;
+    }
+    .theme-wrap { position: relative; }
+    .theme-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      color: var(--pill-text);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .theme-btn:hover, .theme-btn.open {
+      border-color: rgba(255,255,255,0.38);
+      color: rgba(255,255,255,0.85);
+    }
+    .theme-btn.has-selection {
+      border-color: var(--pill-act-bdr);
+      color: var(--pill-act-txt);
+      background: var(--pill-act-bg);
+    }
+    .theme-caret { font-size: 0.65rem; opacity: 0.6; }
+    .theme-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 300;
+      background: #242424;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 8px 0;
+      min-width: 220px;
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .theme-dropdown.open { display: block; }
+    .theme-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      transition: background 0.1s, color 0.1s;
+      user-select: none;
+    }
+    .theme-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .theme-item.checked { color: #fff; }
+    .theme-checkbox {
+      width: 15px; height: 15px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .theme-item.checked .theme-checkbox {
+      background: var(--red);
+      border-color: var(--red);
+    }
+    .theme-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 4px 0; }
+    .theme-clear {
+      display: flex;
+      align-items: center;
+      padding: 7px 16px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.38);
+      cursor: pointer;
+      transition: color 0.12s;
+    }
+    .theme-clear:hover { color: var(--red); }
+    .theme-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .theme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(232,54,61,0.15);
+      border: 1px solid rgba(232,54,61,0.35);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+    }
+    .theme-chip:hover { background: rgba(232,54,61,0.25); }
+    .theme-chip-x { font-size: 0.7rem; opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -739,7 +882,7 @@ HTML = r"""<!DOCTYPE html>
   <div class="header-top">
     <div class="brand">
       <div class="brand-title">9 to 5 AI</div>
-      <div class="brand-sub">TechCrunch AI | VentureBeat AI | The Verge AI | MIT Tech Review | Wired AI | Ars Technica | BBC Technology | ZDNet AI | Engadget | IEEE Spectrum AI</div>
+      <div class="brand-sub">39 sources &middot; Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia</div>
     </div>
     <div class="header-right">
       <div class="header-meta">
@@ -787,6 +930,22 @@ HTML = r"""<!DOCTYPE html>
       </div>
     </div>
   </div>
+
+  <!-- Theme filter row -->
+  <div class="theme-bar">
+    <span class="filter-label">Filter by Theme</span>
+    <div class="theme-wrap">
+      <button class="theme-btn" id="theme-toggle-btn" onclick="toggleThemeDropdown()">
+        <span id="theme-btn-label">All Themes</span>
+        <span class="theme-caret">&#9660;</span>
+      </button>
+      <div class="theme-dropdown" id="theme-dropdown">
+        <div class="theme-clear" onclick="clearThemes()">Clear all</div>
+        <div class="theme-divider"></div>
+      </div>
+    </div>
+    <div class="theme-chips" id="theme-chips"></div>
+  </div>
 </header>
 
 <!-- ═══ SEARCH ROW ═══ -->
@@ -825,11 +984,17 @@ const CC = {
   "UAE":            { flag: "🇦🇪", color: "#6d28d9" },
 };
 
+const THEMES = [
+  "Employment Trends","News","Research","Transformation",
+  "EU","USA","OCM","Canada","Africa","Asia",
+];
+
 // ── State ──────────────────────────────────────────────────────────────────────
 let allArticles   = [];
 let activeDays    = 30;
 let customRange   = null; // {from: Date, to: Date} when custom mode active
 let isLight       = false;
+let activeThemes  = new Set();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function esc(s) {
@@ -897,6 +1062,59 @@ function updateCounts() {
   });
 }
 
+// ── Theme dropdown ────────────────────────────────────────────────────────────
+function buildThemeDropdown() {
+  const dd = document.getElementById("theme-dropdown");
+  THEMES.forEach(name => {
+    const item = document.createElement("div");
+    item.className = "theme-item";
+    item.dataset.theme = name;
+    item.innerHTML = `<span class="theme-checkbox"></span><span>${esc(name)}</span>`;
+    item.onclick = () => toggleThemePick(name);
+    dd.appendChild(item);
+  });
+}
+function toggleThemeDropdown() {
+  const dd  = document.getElementById("theme-dropdown");
+  const btn = document.getElementById("theme-toggle-btn");
+  const open = dd.classList.toggle("open");
+  btn.classList.toggle("open", open);
+  if (open) setTimeout(() => document.addEventListener("click", closeThemeDropdown, {once:true,capture:true}), 0);
+}
+function closeThemeDropdown(e) {
+  const wrap = document.querySelector(".theme-wrap");
+  if (wrap && wrap.contains(e.target)) {
+    setTimeout(() => document.addEventListener("click", closeThemeDropdown, {once:true,capture:true}), 0);
+    return;
+  }
+  document.getElementById("theme-dropdown").classList.remove("open");
+  document.getElementById("theme-toggle-btn").classList.remove("open");
+}
+function toggleThemePick(name) {
+  if (activeThemes.has(name)) activeThemes.delete(name); else activeThemes.add(name);
+  syncThemeUI(); applyFilters();
+}
+function clearThemes() { activeThemes.clear(); syncThemeUI(); applyFilters(); }
+function syncThemeUI() {
+  document.querySelectorAll(".theme-item").forEach(el => {
+    const on = activeThemes.has(el.dataset.theme);
+    el.classList.toggle("checked", on);
+    el.querySelector(".theme-checkbox").textContent = on ? "\u2713" : "";
+  });
+  const btn = document.getElementById("theme-toggle-btn");
+  const lbl = document.getElementById("theme-btn-label");
+  if (activeThemes.size === 0) {
+    lbl.textContent = "All Themes";
+    btn.classList.remove("has-selection");
+  } else {
+    lbl.textContent = activeThemes.size === 1 ? [...activeThemes][0] : activeThemes.size + " themes";
+    btn.classList.add("has-selection");
+  }
+  document.getElementById("theme-chips").innerHTML = [...activeThemes].map(name =>
+    `<span class="theme-chip" onclick="toggleThemePick('${esc(name)}')">${esc(name)}<span class="theme-chip-x">\u2715</span></span>`
+  ).join("");
+}
+
 // ── Apply date + keyword filter, render grid ──────────────────────────────────
 function applyFilters() {
   const q = (document.getElementById("q").value||"").trim().toLowerCase();
@@ -911,6 +1129,9 @@ function applyFilters() {
     shown = allArticles.filter(a => new Date(a.date).getTime() >= cutoff);
   }
   if (q) shown = shown.filter(a => a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q));
+  if (activeThemes.size > 0) {
+    shown = shown.filter(a => (a.themes||[]).some(t => activeThemes.has(t)));
+  }
 
   document.getElementById("hdr-count").textContent =
     shown.length + " of " + allArticles.length + " stories";
@@ -1002,6 +1223,7 @@ document.getElementById("q").addEventListener("input", e => {
   tickUTC();
   setInterval(tickUTC, 1000);
 
+  buildThemeDropdown();
   document.getElementById("hdr-count").textContent = "Loading\u2026";
 
   try {

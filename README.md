@@ -6,7 +6,8 @@ A macOS desktop app that aggregates AI news from around the world, presented in 
 
 ## Features
 
-- **AI news from 10 sources** — TechCrunch AI, VentureBeat, The Verge, MIT Technology Review, Wired, Ars Technica, BBC Technology, ZDNet, Engadget, IEEE Spectrum
+- **AI news from 39 sources across 10 themes** — Employment Trends, News, Research, Transformation, EU, USA, OCM, Canada, Africa, Asia
+- **Theme filter** — multi-select dropdown with chip display; composes with date and keyword filters
 - **Sorted newest first** — always
 - **Country tags** — each story is tagged with the country it reports on (🇺🇸 🇬🇧 🇨🇳 🇫🇷 🇩🇪 🇮🇳 🇨🇦 🇯🇵 🇰🇷 🇮🇱 🇦🇺 🇦🇪)
 - **Story images** — extracted from feed metadata; AI brain placeholder when unavailable
@@ -87,6 +88,9 @@ Outputs:
 
 ## Usage
 
+### Filter by theme
+Click **Filter by Theme** in the header to open a dropdown with all 10 theme categories. Select one or more themes — articles from unselected themes are hidden immediately. Selected themes appear as chips below the dropdown; click a chip (or **Clear all**) to deselect. Theme filters compose with date and keyword filters.
+
 ### Filter by date
 Click the **Today**, **30 days**, **60 days**, or **90 days** pill buttons in the header. Each pill shows the number of stories available for that window. The grid updates instantly — no page reload.
 
@@ -108,18 +112,49 @@ Click the **Quit** button in the top-right corner. The Flask server shuts down a
 
 ## News Sources
 
-| Source | Coverage |
-|---|---|
-| TechCrunch AI | AI industry news |
-| VentureBeat AI | AI business and research |
-| The Verge AI | Consumer AI and tech |
-| MIT Technology Review | AI research and policy |
-| Wired AI | AI culture and technology |
-| Ars Technica | Technology lab (AI-filtered) |
-| BBC Technology | Global tech news (AI-filtered) |
-| ZDNet AI | Enterprise AI |
-| Engadget | Consumer tech (AI-filtered) |
-| IEEE Spectrum AI | AI engineering and research |
+39 verified active feeds across 10 themes.
+
+| # | Name | Theme | Base | Description |
+|---|------|-------|------|-------------|
+| 1 | Indeed Hiring Lab | Employment Trends | USA | Labor market research and AI‑related hiring trends |
+| 2 | Economic Policy Institute | Employment Trends | USA | Worker‑focused economic analysis including AI's impact on jobs |
+| 3 | TechCrunch AI | News | USA | Startup funding, product launches, and AI news |
+| 4 | VentureBeat AI | News | USA | Enterprise AI tools, industry analysis and use‑case deep dives |
+| 5 | The Verge AI | News | USA | Consumer AI, ethics, and societal impact stories |
+| 6 | MIT Tech Review | News | USA | Frontier AI research, policy and innovation coverage |
+| 7 | Wired AI | News | USA | AI regulation, culture, and long‑form tech features |
+| 8 | Ars Technica AI | News | USA | Technical deep dives on models, infra, and tooling |
+| 9 | BBC Technology | News | UK | Global tech and policy news including AI developments |
+| 10 | ZDNet AI | News | USA | Enterprise IT + AI, product and deployment updates |
+| 11 | Engadget | News | USA | Consumer AI gadgets and tech‑product launches |
+| 12 | IEEE Spectrum AI | News | USA | Engineering standards, AI hardware, and systems |
+| 13 | OpenAI News | Research | USA | Model releases, safety updates, and API changes |
+| 14 | Google AI Blog | Research | USA | Research papers, MLOps, and infra‑level AI insights |
+| 15 | Hugging Face Blog | Research | France | Open‑source tooling, models, and ecosystem tools |
+| 16 | DeepMind Blog | Research | UK | Frontier research and safety‑oriented AI work |
+| 17 | McKinsey Insights | Transformation | USA/Global | AI strategy frameworks, economic impact, and adoption paths |
+| 18 | Deloitte Insights Podcast | Transformation | USA/Global | AI governance, risk‑management, and transformation frameworks |
+| 19 | Change Management Review | Transformation | USA | Practitioner‑focused change management and AI adoption content |
+| 20 | EU AI Act | EU | Belgium | AI Act enforcement, compliance timelines, and guidance |
+| 21 | EC Digital Strategy | EU | Belgium | EU AI policy, digital‑strategy updates and roadmaps |
+| 22 | Sifted AI/Europe | EU | UK | European AI startups, venture and ecosystem news |
+| 23 | Euractiv EU Tech | EU | Belgium | EU tech‑policy analysis, including AI legislation |
+| 24 | EDPS AI | EU | Belgium | Data‑privacy and AI‑compliance guidance in EU |
+| 25 | NIST Information Technology | USA | USA | Federal IT and AI standards, risk management updates |
+| 26 | Nextgov | USA | USA | Federal technology and AI adoption across US agencies |
+| 27 | Defense One | USA | USA | Defense technology, AI in national security and DoD programs |
+| 28 | GovCIO Media AI | USA | USA | Agency‑level AI implementations and federal CIO perspectives |
+| 29 | FedScoop AI | USA | USA | Agency‑level AI implementations and case studies |
+| 30 | Kotter Inc. | OCM | USA | 8‑step change leadership and AI‑driven org transformation |
+| 31 | MIT Sloan Management Review | OCM | USA | AI strategy, workforce transformation, and management research |
+| 32 | CD Howe Institute | Canada | Canada | Canadian economic policy including AI and digital economy |
+| 33 | Open North | Canada | Canada | Open data, civic AI, and Canadian digital governance |
+| 34 | Smart Africa AI | Africa | Rwanda | Continental‑level AI blueprint and African‑digital‑strategy |
+| 35 | CIPESA AI Policy | Africa | South Africa | East‑Africa‑focused AI ethics and policy |
+| 36 | Just Security | Africa | USA | National‑security, human‑rights, and AI governance coverage |
+| 37 | CSET Georgetown | Asia | USA | US‑China tech competition, AI policy, and security research |
+| 38 | Japan Digital Agency | Asia | Japan | Japan government AI strategy and digital‑government updates |
+| 39 | Korea AI Times | Asia | South Korea | Korean AI industry news, startups, and policy updates |
 
 ---
 
