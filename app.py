@@ -416,6 +416,7 @@ HTML = r"""<!DOCTYPE html>
     .brand-title {
       font-size: 1.75rem;
       font-weight: 900;
+      cursor: pointer;
       letter-spacing: -0.5px;
       color: #ffffff;
       line-height: 1;
@@ -930,7 +931,7 @@ HTML = r"""<!DOCTYPE html>
   <!-- Top row -->
   <div class="header-top">
     <div class="brand">
-      <div class="brand-title">9 to 5 AI</div>
+      <div class="brand-title" onclick="resetFilters()" title="Clear all filters">9 to 5 AI</div>
       <div class="brand-sub">39 sources &middot; Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia</div>
     </div>
     <div class="header-right">
@@ -1146,6 +1147,19 @@ function toggleThemePick(name) {
   syncThemeUI(); applyFilters();
 }
 function clearThemes() { activeThemes.clear(); syncThemeUI(); applyFilters(); }
+function resetFilters() {
+  // Clear search
+  document.getElementById("q").value = "";
+  // Clear theme selection
+  activeThemes.clear(); syncThemeUI();
+  // Clear custom date range, restore 30-day default pill
+  customRange = null;
+  document.getElementById("custom-range").style.display = "none";
+  document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+  const defaultPill = document.querySelector(".pill[data-days='30']");
+  if (defaultPill) { defaultPill.classList.add("active"); activeDays = 30; }
+  applyFilters();
+}
 function syncThemeUI() {
   document.querySelectorAll(".theme-item").forEach(el => {
     const on = activeThemes.has(el.dataset.theme);
