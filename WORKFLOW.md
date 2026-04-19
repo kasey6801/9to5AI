@@ -262,6 +262,48 @@
 
 ---
 
+### Step 16 — Quit button feedback (shutdown overlay)
+
+**User prompt:**
+> The Quit button does not give any indication of working. Assess and suggest options.
+
+*(After reviewing three options)*
+> Option C
+
+**Claude actions:**
+- Diagnosed the existing `quitApp()`: it fired `POST /quit` then immediately redirected to `/stopped` with no visible feedback between click and navigation.
+- Added `#shutdown-overlay` HTML element (fixed-position, full-viewport) containing a red CSS spinner and "Shutting down…" text — hidden by default via `display:none`.
+- Added `.shutdown-overlay`, `.shutdown-spinner`, and `@keyframes spin` CSS; blurred dark backdrop (`backdrop-filter: blur(6px)`); adapts to both light and dark mode.
+- Updated `quitApp()` to show the overlay immediately on click, then redirect to `/stopped` after 650 ms — giving clear visual confirmation before the page transitions.
+- Committed and pushed to `main`.
+
+---
+
+### Step 17 — Brand title resets all filters
+
+**User prompt:**
+> Clicking on "9 to 5 AI" at the top left should remove all filters.
+
+**Claude actions:**
+- Added `onclick="resetFilters()"` and `cursor: pointer` to the `.brand-title` element; added `title="Clear all filters"` tooltip for discoverability.
+- Added `resetFilters()` JS function: clears the search field, clears all active themes (`activeThemes.clear()` + `syncThemeUI()`), cancels any custom date range, hides `#custom-range`, removes `active` class from all pills, re-activates the 30-day default pill, and calls `applyFilters()`.
+- Committed and pushed to `main`.
+
+---
+
+### Step 18 — Rebuild DMG for v0.42.1 (post Steps 15–17)
+
+**User prompt:**
+> Has this been pushed to Git with a new DMG file?
+> *(on learning DMG was stale)* yes. Do not change the release version.
+
+**Claude actions:**
+- Ran `bash build.sh` → rebuilt `dist/9to5AI.app` (43 MB) and `dist/9to5AI.dmg` (20 MB) incorporating all three recent changes (theme tags, quit overlay, brand title reset).
+- Fetched the existing DMG asset ID from the v0.42.1 release via the GitHub API; deleted the stale asset.
+- Uploaded the new DMG to the v0.42.1 release (version string unchanged).
+
+---
+
 ## File Structure
 
 ```
@@ -314,4 +356,5 @@ Produces `dist/9to5AI.app` and `dist/9to5AI.dmg`. On first launch on another Mac
 | **Header UTC clock** | Live ticking clock showing current UTC time |
 | **Card UTC timestamp** | Shows the story's publication date and time in UTC |
 | **Card theme tag** | Pill tag on each card showing its theme (e.g. "News", "Research", "EU") |
-| **Quit** | Gracefully shuts down the Flask server |
+| **"9 to 5 AI" title** | Click to clear all active filters and return to the 30-day default view |
+| **Quit** | Shows a "Shutting down…" overlay with spinner, then gracefully stops the Flask server |
