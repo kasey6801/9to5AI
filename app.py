@@ -1,7 +1,7 @@
 """
 9to5AI — AI News Aggregator
 ============================
-Version: v1.0.0
+Version: v0.42
 
 A self-contained Flask web application that aggregates AI news from multiple
 public RSS feeds and presents them in a 9to5Mac-inspired interface.
@@ -739,7 +739,7 @@ HTML = r"""<!DOCTYPE html>
   <div class="header-top">
     <div class="brand">
       <div class="brand-title">9 to 5 AI</div>
-      <div class="brand-sub">Daily Intelligence on Artificial Intelligence</div>
+      <div class="brand-sub">TechCrunch AI | VentureBeat AI | The Verge AI | MIT Tech Review | Wired AI | Ars Technica | BBC Technology | ZDNet AI | Engadget | IEEE Spectrum AI</div>
     </div>
     <div class="header-right">
       <div class="header-meta">
