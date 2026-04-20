@@ -335,7 +335,19 @@ def _get_articles() -> list:
 
 
 # ---------------------------------------------------------------------------
-# Favicon — 64×64 ICO with dark rounded square + red "9"
+# Favicon — SVG served from /favicon.svg (most reliable in Chromium/Brave)
+# ---------------------------------------------------------------------------
+
+_FAVICON_SVG = (
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>"
+    "<rect width='32' height='32' rx='6' fill='#131313'/>"
+    "<text x='16' y='23' font-family='Arial Black,sans-serif' font-size='20' "
+    "font-weight='900' fill='#e8363d' text-anchor='middle'>9</text>"
+    "</svg>"
+)
+
+# ---------------------------------------------------------------------------
+# Favicon — ICO + PNG fallbacks
 # ---------------------------------------------------------------------------
 
 _FAVICON_ICO = (
@@ -466,6 +478,7 @@ HTML = r"""<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>9 to 5 AI</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <style>
@@ -1442,6 +1455,11 @@ document.getElementById("q").addEventListener("input", e => {
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+@app.route("/favicon.svg")
+def favicon_svg():
+    return Response(_FAVICON_SVG, mimetype="image/svg+xml")
+
 
 @app.route("/favicon.ico")
 def favicon_ico():
