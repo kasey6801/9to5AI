@@ -9,6 +9,18 @@ public RSS feeds and presents them in a 9to5Mac-inspired interface.
 Stories are sorted by date (newest first), tagged by country of coverage,
 and filterable by keyword and date range. No API keys required.
 
+FILES IN THIS PACKAGE
+---------------------
+app.py          — This file. The entire application: Python backend, HTML, CSS, and JS.
+build.sh        — Shell script that compiles app.py into a macOS .app bundle and .dmg.
+9to5AI.spec     — PyInstaller configuration used by build.sh to package the app.
+make_icon.py    — Generates the app icon (9to5AI_icon.png) programmatically using Pillow.
+9to5AI_icon.png — 1024×1024 source image for the app icon.
+9to5AI.icns     — Converted icon file used by macOS for the .app bundle.
+CLAUDE.md       — Instructions for the Claude Code AI assistant working in this repo.
+README.md       — Project overview and setup instructions for human readers.
+LICENSE         — Open-source licence terms for this project.
+
 ===========================================================================
 SETUP & INSTALLATION — macOS
 ===========================================================================
@@ -61,12 +73,17 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
+# Flask is the web framework that powers this app.
+# It handles incoming browser requests and sends back HTML pages or JSON data.
 
 app = Flask(__name__)
 
 # ---------------------------------------------------------------------------
 # RSS news sources covering AI globally
 # ---------------------------------------------------------------------------
+# NEWS_SOURCES is a list of AI news websites. Each entry has a URL pointing
+# to that site's RSS feed — a standard format websites use to publish updates.
+# filter_ai:True means only AI-related articles are kept from that source.
 
 NEWS_SOURCES = [
     # ── Employment Trends (2) ──────────────────────────────────────────────
@@ -123,6 +140,9 @@ NEWS_SOURCES = [
 # ---------------------------------------------------------------------------
 # Country detection — regex patterns mapped to country names
 # ---------------------------------------------------------------------------
+# Regex (regular expression) patterns are text search rules. For each country,
+# we list keywords and company names that signal an article is about that country.
+# When an article mentions "Silicon Valley" or "OpenAI", it gets tagged "United States".
 
 _COUNTRY_PATTERNS = {
     "United States": [
@@ -306,6 +326,9 @@ def _fetch_feed(source: dict) -> list:
 # ---------------------------------------------------------------------------
 # Article cache — refreshed every 5 minutes
 # ---------------------------------------------------------------------------
+# Fetching all 39 RSS feeds takes a few seconds. To avoid repeating that work
+# on every search, results are stored in memory (_cache) for 5 minutes (300 s).
+# A lock prevents two requests from fetching feeds at exactly the same time.
 
 _cache: list = []
 _cache_ts: float = 0.0
@@ -336,6 +359,9 @@ def _get_articles() -> list:
 # ---------------------------------------------------------------------------
 # Embedded frontend — 9to5Mac-inspired design for AI news
 # ---------------------------------------------------------------------------
+# Instead of separate HTML template files, the entire page (HTML, CSS, and
+# JavaScript) is stored here as one Python string. Flask sends this string
+# directly to the browser when someone visits the app.
 
 HTML = r"""<!DOCTYPE html>
 <html lang="en">
@@ -347,6 +373,8 @@ HTML = r"""<!DOCTYPE html>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ── Tokens — dark mode default ── */
+    /* CSS custom properties (--variables) store colours and sizes in one place.
+       Changing a token here updates every element that uses it throughout the page. */
     :root {
       --hdr:    #131313;
       --bg:     #141414;
@@ -372,6 +400,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* ── Light mode — toggled by .light on <html> ── */
+    /* When JavaScript adds the "light" class to <html>, these variables override
+       the dark defaults above, switching the whole page to a light colour scheme. */
     html.light {
       --bg:     #f2f2f7;
       --card:   #ffffff;
@@ -394,6 +424,8 @@ HTML = r"""<!DOCTYPE html>
     /* ═══════════════════════════════════════════════
        SITE HEADER — always dark regardless of theme
     ═══════════════════════════════════════════════ */
+    /* The sticky header stays at the top of the screen as you scroll.
+       It always uses the dark background colour even when light mode is active. */
     .site-header {
       background: var(--hdr);
       position: sticky;
@@ -403,6 +435,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* ── Top row: brand left, meta+controls right ── */
+    /* Flexbox lays out the brand name on the left and the clock/buttons on the right.
+       justify-content:space-between pushes them to opposite ends of the row. */
     .header-top {
       display: flex;
       align-items: center;
@@ -412,6 +446,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* Brand */
+    /* Holds the "9 to 5 AI" title, the subtitle, and the GitHub link.
+       Clicking the title resets all filters via the onclick handler. */
     .brand {}
     .brand-title {
       font-size: 1.75rem;
@@ -441,6 +477,8 @@ HTML = r"""<!DOCTYPE html>
     .brand-link:hover { color: rgba(255,255,255,0.6); }
 
     /* Right controls */
+    /* Groups the live clock, source count, light/dark toggle, and Quit button.
+       gap:18px adds equal spacing between each control automatically. */
     .header-right {
       display: flex;
       align-items: center;
@@ -467,6 +505,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* Light/dark toggle */
+    /* A pill-shaped button that calls toggleTheme() in JavaScript.
+       It swaps the "light" class on <html>, changing the colour scheme instantly. */
     #theme-btn {
       display: flex;
       align-items: center;
@@ -484,6 +524,8 @@ HTML = r"""<!DOCTYPE html>
     #theme-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
 
     /* Quit */
+    /* The Quit button triggers quitApp() in JavaScript, which sends a POST
+       to /quit and then shows the shutdown overlay until the process exits. */
     #quit-btn {
       background: transparent;
       border: 1px solid rgba(255,255,255,0.16);
@@ -497,6 +539,8 @@ HTML = r"""<!DOCTYPE html>
     #quit-btn:hover { border-color: var(--red); color: var(--red); }
 
     /* Shutdown overlay */
+    /* A full-screen dark backdrop shown while the app is shutting down.
+       The "done" class hides the spinner and reveals the "App stopped" message. */
     #shutdown-overlay {
       display: none;
       position: fixed;
@@ -535,6 +579,8 @@ HTML = r"""<!DOCTYPE html>
     #shutdown-overlay.done .shutdown-sub { display: block; }
 
     /* ── Filter bar ── */
+    /* A horizontal strip inside the header with date-range buttons (pills).
+       flex-wrap:wrap lets pills move to a new line on narrow screens. */
     .filter-bar {
       display: flex;
       align-items: center;
@@ -558,6 +604,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* Date-range pills */
+    /* Rounded buttons for Today / 30 / 60 / 90 days and Custom date range.
+       The "active" class adds a highlight to whichever pill is currently selected. */
     .pill {
       display: inline-flex;
       align-items: center;
@@ -602,6 +650,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* Search row (below header, above grid) */
+    /* Sits just below the sticky header. Contains the keyword search box
+       and Search button. max-width keeps it aligned with the article grid. */
     .search-row {
       display: flex;
       align-items: center;
@@ -654,6 +704,8 @@ HTML = r"""<!DOCTYPE html>
     /* ═══════════════════════════════════════════════
        MAIN CONTENT
     ═══════════════════════════════════════════════ */
+    /* The .page wrapper centres the article grid on wide screens.
+       padding-bottom:80px gives breathing room at the bottom of the page. */
     .page {
       max-width: 1280px;
       margin: 0 auto;
@@ -661,6 +713,8 @@ HTML = r"""<!DOCTYPE html>
     }
 
     /* ── States ── */
+    /* Handles three visual states: loading spinner, empty-results message,
+       and error message. Each is shown or hidden by JavaScript as needed. */
     .center-state {
       display: flex;
       flex-direction: column;
@@ -684,6 +738,8 @@ HTML = r"""<!DOCTYPE html>
     .err-icon { font-size: 2rem; margin-bottom: 10px; }
 
     /* ── Grid ── */
+    /* CSS Grid arranges articles in 3 columns on wide screens, 2 on medium,
+       and 1 column on mobile — controlled by the @media breakpoints below. */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -693,6 +749,8 @@ HTML = r"""<!DOCTYPE html>
     @media (max-width: 640px)  { .grid { grid-template-columns: 1fr; } }
 
     /* ── Card ── */
+    /* Each article is an <a> tag styled as a card that lifts slightly on hover.
+       overflow:hidden clips the image neatly to the card's rounded corners. */
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -835,6 +893,8 @@ HTML = r"""<!DOCTYPE html>
     .no-results { grid-column: 1/-1; }
 
     /* ── Theme filter row ── */
+    /* A second filter strip below the date pills. The dropdown lets users
+       pick one or more topic themes (News, Research, EU, etc.) to narrow results. */
     .theme-bar {
       display: flex;
       align-items: center;
@@ -946,9 +1006,12 @@ HTML = r"""<!DOCTYPE html>
 </div>
 
 <!-- ═══ SITE HEADER ═══ -->
+<!-- The <header> is the always-visible bar at the top of the page.
+     It holds the brand name, date/time, date filters, theme filter, and search. -->
 <header class="site-header">
 
   <!-- Top row -->
+  <!-- Brand name on the left; live clock, light/dark toggle, and Quit on the right. -->
   <div class="header-top">
     <div class="brand">
       <div class="brand-title" onclick="resetFilters()" title="Clear all filters">9 to 5 AI</div>
@@ -967,6 +1030,8 @@ HTML = r"""<!DOCTYPE html>
   </div>
 
   <!-- Filter bar -->
+  <!-- Date-range buttons (Today / 30 / 60 / 90 days / Custom) that filter
+       which articles are shown based on their publication date. -->
   <div class="filter-bar">
     <span class="filter-label">Filter by Date</span>
     <div class="filter-pills">
@@ -1003,6 +1068,8 @@ HTML = r"""<!DOCTYPE html>
   </div>
 
   <!-- Theme filter row -->
+  <!-- Dropdown to filter articles by topic category (News, Research, EU, etc.).
+       Selected themes appear as removable chips next to the dropdown. -->
   <div class="theme-bar">
     <span class="filter-label">Filter by Theme</span>
     <div class="theme-wrap">
@@ -1020,6 +1087,8 @@ HTML = r"""<!DOCTYPE html>
 </header>
 
 <!-- ═══ SEARCH ROW ═══ -->
+<!-- Keyword search bar and button. Searches article titles and summaries.
+     Pressing Enter or clicking Search triggers applyFilters() in JavaScript. -->
 <div class="search-row">
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
@@ -1029,6 +1098,8 @@ HTML = r"""<!DOCTYPE html>
 </div>
 
 <!-- ═══ MAIN CONTENT ═══ -->
+<!-- Container for the article grid. JavaScript fills #view with either a loading
+     spinner while fetching, an error message, or the article cards when ready. -->
 <div class="page">
   <div id="view">
     <div class="center-state">
@@ -1040,6 +1111,8 @@ HTML = r"""<!DOCTYPE html>
 
 <script>
 // ── Country metadata ──────────────────────────────────────────────────────────
+// CC maps each country name to its flag emoji and a background colour used on
+// the country tag shown at the bottom of each article card.
 const CC = {
   "United States": { flag: "🇺🇸", color: "#1d4ed8" },
   "United Kingdom": { flag: "🇬🇧", color: "#dc2626" },
@@ -1061,6 +1134,8 @@ const THEMES = [
 ];
 
 // ── State ──────────────────────────────────────────────────────────────────────
+// These variables track the current filter settings for the whole page.
+// Changing them and calling applyFilters() instantly re-renders the article grid.
 let allArticles   = [];
 let activeDays    = 30;
 let customRange   = null; // {from: Date, to: Date} when custom mode active
@@ -1068,6 +1143,8 @@ let isLight       = false;
 let activeThemes  = new Set();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+// esc() prevents XSS by escaping HTML special characters before inserting
+// user-controlled text into the page. utcTime() and relDate() format article dates.
 function esc(s) {
   return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
                       .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -1092,6 +1169,8 @@ function relDate(iso) {
 }
 
 // ── Placeholder SVG ───────────────────────────────────────────────────────────
+// A built-in icon shown in the image area when an article has no thumbnail.
+// SVG is a text-based image format that scales to any size without blurring.
 const SVG_PH = `<svg width="72" height="72" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="40" cy="40" r="36" stroke="white" stroke-width="2.5"/>
   <path d="M28 40c0-6.627 5.373-12 12-12s12 5.373 12 12-5.373 12-12 12-12-5.373-12-12z" stroke="white" stroke-width="2"/>
@@ -1101,6 +1180,8 @@ const SVG_PH = `<svg width="72" height="72" viewBox="0 0 80 80" fill="none" xmln
 </svg>`;
 
 // ── Card renderer ─────────────────────────────────────────────────────────────
+// Builds the HTML string for one article card and returns it.
+// Called for every article in the filtered list to construct the grid.
 function renderCard(a) {
   const img  = a.image ? `<img class="card-img" src="${esc(a.image)}" alt="" loading="lazy" onerror="this.style.display='none'">` : "";
   const tags = (a.countries||[]).map(c => {
@@ -1126,6 +1207,8 @@ function renderCard(a) {
 }
 
 // ── Update pill counts from allArticles ───────────────────────────────────────
+// Reads the full article list and writes the count of articles within each
+// time window (Today / 30 / 60 / 90 days) into the badge on each pill button.
 function updateCounts() {
   [1,30,60,90].forEach(d => {
     const cutoff = Date.now() - d * 86400000;
@@ -1136,6 +1219,8 @@ function updateCounts() {
 }
 
 // ── Theme dropdown ────────────────────────────────────────────────────────────
+// Builds and controls the multi-select dropdown for filtering by topic theme.
+// activeThemes is a Set; clicking a theme adds or removes it from the set.
 function buildThemeDropdown() {
   const dd = document.getElementById("theme-dropdown");
   THEMES.forEach(name => {
@@ -1202,6 +1287,8 @@ function syncThemeUI() {
 }
 
 // ── Apply date + keyword filter, render grid ──────────────────────────────────
+// The main filter function: narrows allArticles by date, keyword, and theme,
+// then writes the resulting cards into the page's #view element.
 function applyFilters() {
   const q = (document.getElementById("q").value||"").trim().toLowerCase();
   let shown;
@@ -1235,6 +1322,8 @@ function applyFilters() {
 }
 
 // ── Pill selection ────────────────────────────────────────────────────────────
+// Handles clicks on the date-range pill buttons (Today / 30 / 60 / 90 / Custom).
+// Only one pill is "active" at a time; selecting one deactivates the others.
 function selectPill(btn, days) {
   document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
   btn.classList.add("active");
@@ -1271,6 +1360,8 @@ function applyCustomRange() {
 }
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
+// Switches the page between dark and light colour schemes by toggling the
+// "light" CSS class on the root <html> element.
 function toggleTheme() {
   isLight = !isLight;
   document.documentElement.classList.toggle("light", isLight);
@@ -1278,6 +1369,8 @@ function toggleTheme() {
 }
 
 // ── Quit ──────────────────────────────────────────────────────────────────────
+// Shows the shutdown overlay immediately, then POSTs to /quit which exits the
+// Python process after 0.4 s. The overlay stays visible — no page redirect.
 async function quitApp() {
   const overlay = document.getElementById("shutdown-overlay");
   overlay.classList.add("visible");
@@ -1287,9 +1380,13 @@ async function quitApp() {
 }
 
 // ── Heartbeat ─────────────────────────────────────────────────────────────────
+// Pings the server every 5 seconds so the watchdog thread knows the browser tab
+// is still open. If pings stop for 12 s, the server shuts itself down.
 setInterval(() => fetch("/heartbeat",{method:"POST"}).catch(()=>{}), 5000);
 
 // ── Search key binding ────────────────────────────────────────────────────────
+// Lets users press Enter to search instead of clicking the Search button.
+// Clearing the search box instantly resets results so the full list reappears.
 document.getElementById("q").addEventListener("keydown", e => {
   if (e.key === "Enter") applyFilters();
 });
@@ -1298,6 +1395,8 @@ document.getElementById("q").addEventListener("input", e => {
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+// Runs once when the page loads: starts the live UTC clock, builds the theme
+// dropdown, fetches all articles from /fetch, then renders the initial grid.
 (async function init() {
   // Set header date and start live UTC clock
   document.getElementById("hdr-date").textContent =
@@ -1340,7 +1439,9 @@ document.getElementById("q").addEventListener("input", e => {
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
-
+# Flask routes connect URL paths to Python functions.
+# Visiting "/" loads the main page; "/fetch" returns articles as JSON;
+# "/quit" shuts the app down; "/heartbeat" tells the app the browser is still open.
 
 
 @app.route("/")
@@ -1411,6 +1512,9 @@ def heartbeat():
 # ---------------------------------------------------------------------------
 # Watchdog — exits when browser tab is closed for > 12 s
 # ---------------------------------------------------------------------------
+# This background thread checks every 3 seconds whether the browser has sent
+# a heartbeat recently. If 12 seconds pass with no heartbeat, the tab is
+# likely closed, so the app exits automatically rather than running forever.
 
 _last_hb: float = time.monotonic()
 
@@ -1426,6 +1530,8 @@ def _watchdog():
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+# Python runs this block when you launch the file directly (python app.py).
+# It starts the watchdog thread, opens the browser after 1.5 s, then starts Flask.
 
 if __name__ == "__main__":
     threading.Thread(target=_watchdog, daemon=True).start()
