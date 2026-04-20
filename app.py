@@ -469,12 +469,13 @@ HTML = r"""<!DOCTYPE html>
       font-size: 0.62rem;
       font-weight: 600;
       letter-spacing: 1.4px;
-      color: rgba(255,255,255,0.35);
-      text-decoration: none;
+      color: rgba(255,255,255,0.75);
+      text-decoration: underline;
+      text-underline-offset: 3px;
       margin-top: 3px;
       display: block;
     }
-    .brand-link:hover { color: rgba(255,255,255,0.6); }
+    .brand-link:hover { color: #ffffff; }
 
     /* Right controls */
     /* Groups the live clock, source count, light/dark toggle, and Quit button.
