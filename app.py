@@ -466,13 +466,12 @@ HTML = r"""<!DOCTYPE html>
       margin-top: 5px;
     }
     .brand-link {
-      font-size: 0.62rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 1.4px;
-      color: rgba(255,255,255,0.75);
+      color: rgba(255,255,255,0.55);
       text-decoration: underline;
       text-underline-offset: 3px;
-      margin-top: 3px;
+      margin-top: 6px;
       display: block;
     }
     .brand-link:hover { color: #ffffff; }
