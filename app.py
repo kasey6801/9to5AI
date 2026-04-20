@@ -524,6 +524,15 @@ HTML = r"""<!DOCTYPE html>
       font-weight: 500;
       letter-spacing: 0.02em;
     }
+    #shutdown-overlay.done .shutdown-spinner { display: none; }
+    #shutdown-overlay.done .shutdown-msg { font-size: 1.1rem; }
+    .shutdown-sub {
+      display: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+    #shutdown-overlay.done .shutdown-sub { display: block; }
 
     /* ── Filter bar ── */
     .filter-bar {
@@ -933,6 +942,7 @@ HTML = r"""<!DOCTYPE html>
 <div id="shutdown-overlay">
   <div class="shutdown-spinner"></div>
   <div class="shutdown-msg">Shutting down…</div>
+  <div class="shutdown-sub">App stopped. You can close this tab.</div>
 </div>
 
 <!-- ═══ SITE HEADER ═══ -->
@@ -1269,9 +1279,11 @@ function toggleTheme() {
 
 // ── Quit ──────────────────────────────────────────────────────────────────────
 async function quitApp() {
-  document.getElementById("shutdown-overlay").classList.add("visible");
-  await fetch("/quit", { method: "POST" });
-  setTimeout(() => { window.location.href = "/stopped"; }, 650);
+  const overlay = document.getElementById("shutdown-overlay");
+  overlay.classList.add("visible");
+  try { await fetch("/quit", { method: "POST" }); } catch(_) {}
+  overlay.querySelector(".shutdown-msg").textContent = "App stopped.";
+  overlay.classList.add("done");
 }
 
 // ── Heartbeat ─────────────────────────────────────────────────────────────────
