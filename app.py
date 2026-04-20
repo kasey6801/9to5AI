@@ -429,6 +429,16 @@ HTML = r"""<!DOCTYPE html>
       color: rgba(255,255,255,0.35);
       margin-top: 5px;
     }
+    .brand-link {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      margin-top: 3px;
+      display: block;
+    }
+    .brand-link:hover { color: rgba(255,255,255,0.6); }
 
     /* Right controls */
     .header-right {
@@ -933,6 +943,7 @@ HTML = r"""<!DOCTYPE html>
     <div class="brand">
       <div class="brand-title" onclick="resetFilters()" title="Clear all filters">9 to 5 AI</div>
       <div class="brand-sub">39 sources &middot; Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia</div>
+      <a class="brand-link" href="https://github.com/kasey6801/9to5AI" target="_blank" rel="noopener">github.com/kasey6801/9to5AI</a>
     </div>
     <div class="header-right">
       <div class="header-meta">
