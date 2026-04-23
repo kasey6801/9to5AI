@@ -93,6 +93,7 @@ NEWS_SOURCES = [
     {"name": "TechCrunch AI",               "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",                     "default_country": "United States", "filter_ai": False, "theme": "News"},
     {"name": "VentureBeat AI",              "url": "https://venturebeat.com/category/ai/feed/",                                    "default_country": "United States", "filter_ai": False, "theme": "News"},
     {"name": "The Verge AI",                "url": "https://www.verge.com/ai-artificial-intelligence.rss",                         "default_country": "United States", "filter_ai": False, "theme": "News"},
+    {"name": "The Verge",                   "url": "https://www.theverge.com/rss/index.xml",                                       "default_country": "United States", "filter_ai": True,  "theme": "News"},
     {"name": "MIT Tech Review",             "url": "https://www.technologyreview.com/feed/",                                       "default_country": "United States", "filter_ai": False, "theme": "News"},
     {"name": "Wired AI",                    "url": "https://www.wired.com/feed/tag/ai/latest/",                                    "default_country": "United States", "filter_ai": False, "theme": "News"},
     {"name": "Ars Technica AI",             "url": "https://arstechnica.com/ai/feed/",                                             "default_country": "United States", "filter_ai": False, "theme": "News"},
@@ -1015,7 +1016,7 @@ HTML = r"""<!DOCTYPE html>
   <div class="header-top">
     <div class="brand">
       <div class="brand-title" onclick="resetFilters()" title="Clear all filters">9 to 5 AI</div>
-      <div class="brand-sub">39 sources &middot; Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia</div>
+      <div class="brand-sub">40 sources &middot; Employment Trends | News | Research | Transformation | EU | USA | OCM | Canada | Africa | Asia</div>
       <a class="brand-link" href="https://github.com/kasey6801/9to5AI" target="_blank" rel="noopener">github.com/kasey6801/9to5AI</a>
     </div>
     <div class="header-right">
